@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Counter POS — AITCH Demo</title>
+<style>
+:root{--ink:#0B0D12;--s:#141821;--l:#232A36;--v:#C6F432;--t:#EEF1F6;--m:#8A93A6;--r:#ff6b6b}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--ink);color:var(--t);font:14px/1.5 Inter,system-ui,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--l)}
+header b{font-size:18px}.badge{border:1px dashed #7C5CFF;color:#b7a8ff;font-size:11px;padding:2px 8px;border-radius:6px}
+.tabs{margin-left:auto;display:flex;gap:6px}button{font:inherit;cursor:pointer;border:1px solid var(--l);background:var(--s);color:var(--t);padding:8px 14px;border-radius:8px}
+button.on,button.p{background:var(--v);color:var(--ink);border-color:var(--v);font-weight:600}
+main{padding:18px}.view{display:none}.view.on{display:block}
+.pos{display:grid;grid-template-columns:1fr 340px;gap:18px}@media(max-width:800px){.pos{grid-template-columns:1fr}}
+input,select{font:inherit;background:var(--s);color:var(--t);border:1px solid var(--l);border-radius:8px;padding:9px 12px;width:100%}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+.prod{background:var(--s);border:1px solid var(--l);border-radius:12px;padding:14px;cursor:pointer;text-align:left}
+.prod:hover{border-color:var(--v)}.prod small{color:var(--m);display:block}.prod.low small{color:var(--r)}
+.cart{background:var(--s);border:1px solid var(--l);border-radius:14px;padding:16px;display:flex;flex-direction:column;min-height:420px}
+.line{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--l);gap:8px}
+.line button{padding:2px 8px}.tot{margin-top:auto;padding-top:12px;font-size:15px}.tot div{display:flex;justify-content:space-between}
+.tot .big{font-size:24px;font-weight:700;margin:6px 0 12px}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--l)}th{color:var(--m);font-weight:500}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.kpi{background:var(--s);border:1px solid var(--l);border-radius:12px;padding:16px}.kpi b{font-size:24px;display:block}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}.warn{color:var(--r)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--v);color:var(--ink);padding:10px 18px;border-radius:10px;font-weight:600;display:none}
+</style></head><body>
+<header><b>Counter</b><span class="badge">AITCH DEMO · sample data</span>
+<div class="tabs"><button class="on" data-v="sell">Sell</button><button data-v="inv">Inventory</button><button data-v="rep">Reports</button></div></header>
+<main>
+<div id="sell" class="view on"><div class="pos"><div><input id="q" placeholder="Search or scan SKU…"><div class="prods" id="prods"></div></div>
+<div class="cart"><h3>Current sale</h3><div id="lines"></div><div class="tot"><div><span>Subtotal</span><span id="sub"></span></div><div><span>Tax 8%</span><span id="tax"></span></div><div class="big"><span>Total</span><span id="total"></span></div>
+<div class="row"><button onclick="clearCart()">Clear</button><button class="p" onclick="checkout()">Charge</button></div></div></div></div></div>
+<div id="inv" class="view"><h3>Add / restock product</h3><div class="row" style="margin-top:10px"><input id="nsku" placeholder="SKU"><input id="nname" placeholder="Name"><input id="nprice" type="number" step=".01" placeholder="Price"><input id="nqty" type="number" placeholder="Qty"><button class="p" onclick="addProd()">Save</button></div>
+<table><thead><tr><th>SKU</th><th>Name</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody id="invt"></tbody></table></div>
+<div id="rep" class="view"><div class="kpis" id="kpis"></div><h3 style="margin-top:20px">Recent sales</h3><table><thead><tr><th>Time</th><th>Items</th><th>Total</th></tr></thead><tbody id="salest"></tbody></table><button style="margin-top:14px" onclick="resetAll()">Reset demo data</button></div>
+</main><div id="toast"></div>
+<script>
+const TAX=.08,LOW=5,K='aitch-counter';
+const seed=()=>({prods:[["1001","Espresso",2.8,40],["1002","Cappuccino",3.9,35],["1003","Latte",4.2,30],["1004","Croissant",2.5,12],["1005","Blueberry Muffin",2.9,4],["1006","Bagel",2.2,18],["1007","Iced Tea",3.1,22],["1008","Water 500ml",1.5,3]].map(([sku,name,price,stock])=>({sku,name,price,stock})),sales:[]});
+let db;try{db=JSON.parse(localStorage.getItem(K))||seed()}catch{db=seed()}
+let cart={};const $=id=>document.getElementById(id),f=n=>'$'+n.toFixed(2);
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch{}};
+const toast=m=>{$('toast').textContent=m;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',1800)};
+function renderProds(){const q=$('q').value.toLowerCase();$('prods').innerHTML=db.prods.filter(p=>p.name.toLowerCase().includes(q)||p.sku.includes(q)).map(p=>`<button class="prod ${p.stock<=LOW?'low':''}" onclick="add('${p.sku}')"><b>${p.name}</b><small>${f(p.price)} · ${p.stock} in stock</small></button>`).join('')}
+function add(sku){const p=db.prods.find(x=>x.sku===sku);if((cart[sku]||0)>=p.stock)return toast('Out of stock');cart[sku]=(cart[sku]||0)+1;renderCart()}
+function dec(sku){if(--cart[sku]<=0)delete cart[sku];renderCart()}
+function totals(){let s=0;for(const k in cart)s+=db.prods.find(p=>p.sku===k).price*cart[k];return{s,t:s*TAX,g:s*(1+TAX)}}
+function renderCart(){$('lines').innerHTML=Object.keys(cart).map(k=>{const p=db.prods.find(x=>x.sku===k);return`<div class="line"><span>${p.name}</span><span><button onclick="dec('${k}')">−</button> ${cart[k]} <button onclick="add('${k}')">+</button></span><span>${f(p.price*cart[k])}</span></div>`}).join('')||'<p style="color:var(--m);padding:20px 0">Tap a product to add it.</p>';const t=totals();$('sub').textContent=f(t.s);$('tax').textContent=f(t.t);$('total').textContent=f(t.g)}
+function clearCart(){cart={};renderCart()}
+function checkout(){if(!Object.keys(cart).length)return toast('Cart is empty');const t=totals();for(const k in cart)db.prods.find(p=>p.sku===k).stock-=cart[k];db.sales.unshift({at:Date.now(),items:Object.values(cart).reduce((a,b)=>a+b,0),total:t.g});save();toast('Charged '+f(t.g));cart={};renderAll()}
+function addProd(){const sku=$('nsku').value.trim(),name=$('nname').value.trim(),price=+$('nprice').value,qty=+$('nqty').value||0;if(!sku)return toast('SKU required');let p=db.prods.find(x=>x.sku===sku);if(p){p.stock+=qty;if(name)p.name=name;if(price>0)p.price=price}else{if(!name||!(price>0))return toast('Name and price required');db.prods.push({sku,name,price,stock:qty})}save();['nsku','nname','nprice','nqty'].forEach(i=>$(i).value='');toast('Saved');renderAll()}
+function del(sku){db.prods=db.prods.filter(p=>p.sku!==sku);delete cart[sku];save();renderAll()}
+function renderInv(){$('invt').innerHTML=db.prods.map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${f(p.price)}</td><td class="${p.stock<=LOW?'warn':''}">${p.stock}${p.stock<=LOW?' · low':''}</td><td><button onclick="del('${p.sku}')">Remove</button></td></tr>`).join('')}
+function renderRep(){const rev=db.sales.reduce((a,s)=>a+s.total,0),n=db.sales.length;const low=db.prods.filter(p=>p.stock<=LOW).length;$('kpis').innerHTML=[['Revenue',f(rev)],['Transactions',n],['Avg ticket',f(n?rev/n:0)],['Low-stock items',low]].map(([a,b])=>`<div class="kpi"><small style="color:var(--m)">${a}</small><b>${b}</b></div>`).join('');$('salest').innerHTML=db.sales.slice(0,20).map(s=>`<tr><td>${new Date(s.at).toLocaleString()}</td><td>${s.items}</td><td>${f(s.total)}</td></tr>`).join('')||'<tr><td colspan=3 style="color:var(--m)">No sales yet.</td></tr>'}
+function resetAll(){db=seed();cart={};save();renderAll();toast('Demo reset')}
+function renderAll(){renderProds();renderCart();renderInv();renderRep()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.view').forEach(e=>e.classList.remove('on'));b.classList.add('on');$(b.dataset.v).classList.add('on')});
+$('q').oninput=renderProds;$('q').onkeydown=e=>{if(e.key==='Enter'){const p=db.prods.find(x=>x.sku===e.target.value.trim());if(p){add(p.sku);e.target.value='';renderProds()}}};
+renderAll();
+</script></body></html>

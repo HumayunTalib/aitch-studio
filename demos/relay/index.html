@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relay Support Agent — AITCH Demo</title>
+<style>
+:root{--ink:#0B0D12;--s:#141821;--l:#232A36;--v:#C6F432;--t:#EEF1F6;--m:#8A93A6;--sg:#7C5CFF}
+*{box-sizing:border-box;margin:0;padding:0}body{background:#f3f4f7;color:#1b1f27;font:15px/1.6 Inter,system-ui,sans-serif;min-height:100vh}
+.site{max-width:900px;margin:0 auto;padding:40px 20px}.site h1{font-size:34px;margin:8px 0}.site p{color:#555;max-width:560px}
+.badge{display:inline-block;border:1px dashed var(--sg);color:var(--sg);font-size:11px;padding:2px 8px;border-radius:6px}
+.kb{margin-top:30px;background:#fff;border-radius:14px;padding:20px;border:1px solid #e3e5ea}.kb h3{margin-bottom:8px}.kb li{margin-left:18px;color:#555;font-size:14px}
+#fab{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;border:0;background:var(--ink);color:var(--v);font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#chat{position:fixed;right:22px;bottom:94px;width:min(370px,calc(100vw - 32px));height:min(540px,calc(100vh - 120px));background:var(--ink);color:var(--t);border-radius:18px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#chat.open{display:flex}.ch{padding:14px 16px;border-bottom:1px solid var(--l);display:flex;align-items:center;gap:10px}.dot{width:9px;height:9px;border-radius:50%;background:var(--v)}
+.ch small{color:var(--m);display:block;font-size:12px}#log{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:85%;padding:10px 13px;border-radius:14px;font-size:14px}.bot{background:var(--s);border:1px solid var(--l);align-self:flex-start}.me{background:var(--v);color:var(--ink);align-self:flex-end}
+.src{display:block;margin-top:6px;font-size:11px;color:var(--m)}.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.chips button{background:transparent;border:1px solid var(--l);color:var(--t);border-radius:20px;padding:5px 10px;font-size:12px;cursor:pointer}
+form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--l)}form input{flex:1;background:var(--s);border:1px solid var(--l);color:var(--t);border-radius:10px;padding:10px;font:inherit}
+form button{background:var(--v);border:0;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer}
+</style></head><body>
+<div class="site"><span class="badge">AITCH DEMO · fictional business</span><h1>Green Leaf Bakery</h1>
+<p>This page is a stand-in for a client website. The chat bubble (bottom right) is Relay: a support agent that answers only from the business's knowledge base and hands off to a human when it isn't sure.</p>
+<div class="kb"><h3>Knowledge base loaded into this demo</h3><ul id="kblist"></ul>
+<p style="font-size:13px;margin-top:10px">This offline demo matches questions to the knowledge base by keyword. Client builds add an LLM (Claude or OpenAI) for natural replies, still grounded in these same sources.</p></div></div>
+<button id="fab" aria-label="Open chat">✦</button>
+<div id="chat"><div class="ch"><span class="dot"></span><div><b>Relay</b><small>Green Leaf Bakery assistant</small></div></div>
+<div id="log"></div><div class="chips" id="chips"></div>
+<form id="f"><input id="i" placeholder="Ask a question…" autocomplete="off"><button>→</button></form></div>
+<script>
+const KB=[
+{t:"Opening hours",k:"hours open opening close closing time when today weekend sunday saturday",a:"We're open Mon–Fri 7am–6pm, Sat 8am–4pm, and closed on Sundays."},
+{t:"Location & parking",k:"where location address find parking directions",a:"We're at 12 Elm Street, next to the library. Free street parking is available after 9am."},
+{t:"Custom cakes",k:"cake custom birthday wedding order celebration",a:"Custom cakes need 72 hours' notice and start at $45 for a 6-inch. You can order in store or by calling (555) 010-2040."},
+{t:"Allergens",k:"gluten allergy allergen vegan nut dairy free egg",a:"We offer gluten-free and vegan options daily. All items are made in a kitchen that handles nuts, so we can't guarantee nut-free."},
+{t:"Delivery",k:"delivery deliver ship shipping uber courier",a:"We deliver within 5 miles for $4. Orders over $40 get free delivery."},
+{t:"Payments",k:"pay payment card cash apple google contactless",a:"We accept cash, all major cards, Apple Pay and Google Pay."},
+{t:"Refunds",k:"refund return wrong complaint unhappy money back",a:"If something isn't right, bring your receipt within 24 hours and we'll replace it or refund you."}];
+const stop=new Set("the a an is are do you i to of for and what can my we our how does on in it at".split(" "));
+const tok=s=>s.toLowerCase().match(/[a-z]+/g)?.filter(w=>!stop.has(w))||[];
+function answer(q){const w=tok(q);let best=null,sc=0;for(const d of KB){const ks=new Set(tok(d.k+" "+d.t));const s=w.filter(x=>ks.has(x)||[...ks].some(k=>k.length>4&&x.startsWith(k.slice(0,5)))).length;if(s>sc){sc=s;best=d}}
+if(/human|person|agent|staff|someone/.test(q.toLowerCase()))return{a:"Sure, I'll pass you to the team. Leave your email or phone and someone will reply within business hours.",src:"Human handoff"};
+if(/^(hi|hello|hey)\b/i.test(q.trim()))return{a:"Hi! I can help with hours, location, cakes, allergens, delivery, payments and refunds.",src:null};
+return best&&sc>0?{a:best.a,src:best.t}:{a:"I'm not sure about that, and I don't want to guess. Want me to connect you with a team member?",src:"Low confidence: offering handoff"}}
+const log=document.getElementById('log');
+function say(t,who,src){const d=document.createElement('div');d.className='m '+who;d.textContent=t;if(src){const s=document.createElement('span');s.className='src';s.textContent='Source: '+src;d.appendChild(s)}log.appendChild(d);log.scrollTop=log.scrollHeight}
+function ask(q){if(!q.trim())return;say(q,'me');setTimeout(()=>{const r=answer(q);say(r.a,'bot',r.src)},350)}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();const i=document.getElementById('i');ask(i.value);i.value=''};
+document.getElementById('fab').onclick=()=>document.getElementById('chat').classList.toggle('open');
+document.getElementById('chips').innerHTML=["Are you open Sunday?","Do you have vegan options?","Can I order a birthday cake?","Talk to a human"].map(c=>`<button>${c}</button>`).join('');
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>ask(b.textContent));
+document.getElementById('kblist').innerHTML=KB.map(d=>`<li><b>${d.t}</b>: ${d.a}</li>`).join('');
+say("Hi, I'm Relay. Ask me anything about Green Leaf Bakery.",'bot');
+document.getElementById('chat').classList.add('open');
+</script></body></html>

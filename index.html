@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AITCH — Software, built sharp</title>
+<meta name="description" content="AITCH is an independent AI-powered software studio building custom web apps, POS systems, dashboards, automation and AI agents.">
+<link rel="icon" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0B0D12;--surface:#141821;--line:#232A36;--volt:#C6F432;--signal:#7C5CFF;--text:#EEF1F6;--muted:#8A93A6}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font:16px/1.6 Inter,system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:"Space Grotesk",sans-serif;line-height:1.1;letter-spacing:-.02em}
+.mono{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--volt)}
+nav{position:sticky;top:0;background:rgba(11,13,18,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;gap:10px;align-items:center;font:700 20px "Space Grotesk"}
+.brand img{width:30px}
+nav ul{display:flex;gap:28px;list-style:none;color:var(--muted);font-size:14px}
+nav ul a:hover{color:var(--text)}
+.btn{display:inline-block;padding:12px 22px;border-radius:10px;font-weight:600;font-size:15px}
+.btn-p{background:var(--volt);color:var(--ink)}
+.btn-g{border:1px solid var(--line)}
+.btn-g:hover{border-color:var(--muted)}
+.hero{padding:110px 0 90px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;left:-10%;right:-10%;top:48%;height:10px;background:var(--volt);opacity:.08;filter:blur(30px)}
+.hero h1{font-size:clamp(40px,7vw,84px);max-width:900px;margin:18px 0 22px}
+.hero h1 em{font-style:normal;color:var(--volt)}
+.hero p{color:var(--muted);font-size:19px;max-width:620px;margin-bottom:34px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+section{padding:90px 0;border-top:1px solid var(--line)}
+.sh{margin-bottom:44px}.sh h2{font-size:clamp(30px,4vw,44px);margin-top:10px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;transition:.2s}
+.card:hover{border-color:#3a4456;transform:translateY(-2px)}
+.card h3{font-size:20px;margin:12px 0 8px}
+.card p{color:var(--muted);font-size:15px}
+.ic{width:38px;height:38px;border-radius:10px;background:rgba(198,244,50,.1);color:var(--volt);display:grid;place-items:center;font:700 16px "JetBrains Mono"}
+.tag{display:inline-block;font:500 11px "JetBrains Mono";padding:3px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted);margin:10px 6px 0 0}
+.demo{border:1px dashed var(--signal);color:#b7a8ff}
+.steps{counter-reset:s;display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.steps div{counter-increment:s;padding:22px;border-left:2px solid var(--line)}
+.steps div:before{content:"0" counter(s);font:500 13px "JetBrains Mono";color:var(--volt)}
+.steps h3{font-size:18px;margin:8px 0 6px}.steps p{color:var(--muted);font-size:14px}
+.price{display:flex;flex-direction:column}
+.price .amt{font:700 36px "Space Grotesk";margin:10px 0}
+.price ul{list-style:none;color:var(--muted);font-size:14px;margin:14px 0 22px;flex:1}
+.price li{padding:5px 0;border-bottom:1px solid var(--line)}
+.price li:before{content:"→ ";color:var(--volt)}
+.feat{border-color:var(--volt)}
+.contact{text-align:center}
+.contact h2{font-size:clamp(32px,5vw,56px);margin:12px 0 18px}
+.contact p{color:var(--muted);margin-bottom:28px}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media(max-width:720px){nav ul{display:none}.hero{padding:70px 0 60px}section{padding:64px 0}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#"><img src="logo.svg" alt="">AITCH</a>
+  <ul><li><a href="#services">Services</a></li><li><a href="#work">Work</a></li><li><a href="#process">Process</a></li><li><a href="#pricing">Pricing</a></li></ul>
+  <a class="btn btn-p" href="#contact">Start a project</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="mono">Independent software studio</span>
+  <h1>Software, <em>built sharp.</em></h1>
+  <p>AITCH builds custom web apps, business tools, automations and AI agents — combining disciplined engineering with AI-assisted development to ship faster, without cutting corners.</p>
+  <div class="cta"><a class="btn btn-p" href="#contact">Get a free scope &amp; quote</a><a class="btn btn-g" href="#work">See demo projects</a></div>
+</div></header>
+
+<section id="services"><div class="wrap">
+  <div class="sh"><span class="mono">Services</span><h2>What we build</h2></div>
+  <div class="grid">
+    <div class="card"><div class="ic">AI</div><h3>AI agents &amp; assistants</h3><p>Customer-support bots, lead qualifiers and internal assistants trained on your docs and connected to your tools.</p></div>
+    <div class="card"><div class="ic">⟳</div><h3>Workflow automation</h3><p>Kill the copy-paste. Connect forms, sheets, CRMs, email and payments into reliable automated pipelines.</p></div>
+    <div class="card"><div class="ic">▦</div><h3>POS &amp; inventory</h3><p>Point-of-sale, stock tracking, suppliers and reporting — tailored to how your shop actually runs.</p></div>
+    <div class="card"><div class="ic">◔</div><h3>Dashboards &amp; analytics</h3><p>Turn scattered data into one live dashboard with the numbers that matter to your business.</p></div>
+    <div class="card"><div class="ic">&lt;/&gt;</div><h3>Custom web apps &amp; MVPs</h3><p>From idea to launched product: SaaS MVPs, portals, booking systems and internal tools.</p></div>
+    <div class="card"><div class="ic">◱</div><h3>Websites &amp; e-commerce</h3><p>Fast, SEO-ready business sites and online stores that load quickly and convert visitors.</p></div>
+  </div>
+</div></section>
+
+<section id="work"><div class="wrap">
+  <div class="sh"><span class="mono">Work</span><h2>Demonstration projects</h2></div>
+  <p style="color:var(--muted);margin:-24px 0 32px;max-width:640px">These are in-house demos built to show capability — not client work. Each one runs live in your browser.</p>
+  <div class="grid">
+    <div class="card"><span class="tag demo">DEMO</span><h3>Counter — POS &amp; Inventory</h3><p>Checkout, SKU/scanner search, inventory with low-stock alerts, and sales reports.</p><span class="tag">JavaScript</span><span class="tag">Local storage</span><br><a class="btn btn-g" style="margin-top:16px" href="demos/counter/">Open live demo →</a></div>
+    <div class="card"><span class="tag demo">DEMO</span><h3>Relay — AI Support Agent</h3><p>Embeddable chat assistant answering from a business knowledge base, with human handoff.</p><span class="tag">Knowledge base</span><span class="tag">JS widget</span><span class="tag">LLM-ready</span><br><a class="btn btn-g" style="margin-top:16px" href="demos/relay/">Open live demo →</a></div>
+    <div class="card"><span class="tag demo">DEMO</span><h3>Pulse — Business Dashboard</h3><p>Revenue, orders and customer metrics with filters, trends and CSV import.</p><span class="tag">Canvas charts</span><span class="tag">CSV import</span><br><a class="btn btn-g" style="margin-top:16px" href="demos/pulse/">Open live demo →</a></div>
+  </div>
+</div></section>
+
+<section id="process"><div class="wrap">
+  <div class="sh"><span class="mono">Process</span><h2>How a project runs</h2></div>
+  <div class="steps">
+    <div><h3>Scope</h3><p>A short call or brief. You get a written scope, timeline and fixed quote.</p></div>
+    <div><h3>Milestones</h3><p>Work is split into milestones you review and approve before payment.</p></div>
+    <div><h3>Build &amp; test</h3><p>Clean code, automated tests and a staging link you can click through.</p></div>
+    <div><h3>Launch</h3><p>Deployment, documentation and handover. Your code, your accounts.</p></div>
+    <div><h3>Support</h3><p>Free bug-fix window after launch, plus optional monthly care plans.</p></div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <div class="sh"><span class="mono">Pricing</span><h2>Starting points</h2></div>
+  <div class="grid">
+    <div class="card price"><span class="mono">Launch</span><div class="amt">from $350</div><p>Landing page or small business website.</p><ul><li>Up to 5 sections/pages</li><li>Mobile + SEO basics</li><li>Contact form</li><li>7-day delivery</li></ul><a class="btn btn-g" href="#contact">Get started</a></div>
+    <div class="card price feat"><span class="mono">Automate</span><div class="amt">from $600</div><p>AI agent or workflow automation.</p><ul><li>Chatbot on your docs or 3–5 connected tools</li><li>Testing + documentation</li><li>14-day support</li></ul><a class="btn btn-p" href="#contact">Get started</a></div>
+    <div class="card price"><span class="mono">Build</span><div class="amt">from $1,500</div><p>Custom web app, POS, dashboard or MVP.</p><ul><li>Milestone-based delivery</li><li>Auth, database, admin panel</li><li>30-day support</li></ul><a class="btn btn-g" href="#contact">Get started</a></div>
+  </div>
+</div></section>
+
+<section id="contact" class="contact"><div class="wrap">
+  <span class="mono">Contact</span>
+  <h2>Have a project in mind?</h2>
+  <p>Send a few lines about what you need. You'll get a scoped quote within 24 hours.</p>
+  <a class="btn btn-p" href="mailto:aitchstudio.official@gmail.com">aitchstudio.official@gmail.com</a>
+</div></section>
+
+<footer><div class="wrap"><span>© 2026 AITCH. Independent software studio.</span><span>Software, built sharp.</span></div></footer>
+</body>
+</html>
